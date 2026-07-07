@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Eleanor Whitmore | Author Visibility & Book Marketing Specialist</title>
 <meta name="description" content="Eleanor Whitmore helps independent authors get found, read, and ranked. Amazon discoverability strategy, metadata architecture, and book marketing that actually works." />
+
+<meta property="og:title" content="Eleanor Whitmore | Author Visibility & Book Marketing Specialist" />
+<meta property="og:description" content="Amazon discoverability strategy, metadata architecture, and book marketing that actually works." />
+<meta property="og:image" content="https://www.eleanorwhitmore.org/eleanor-whitmore-1.jpg" />
+<meta property="og:url" content="https://www.eleanorwhitmore.org" />
+<meta property="og:type" content="website" />
+
 <link rel="icon" type="image/jpeg" href="Eleanor Whitmore.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -724,7 +731,11 @@ section { padding: 120px 0; }
 .hero-photo-overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  background: linear-gradient(to top, rgba(10,22,40,0.95) 0%, transparent 100%);
+  height: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(to top, rgba(10,22,40,0.95) 0%, rgba(10,22,40,0.5) 40%, transparent 100%);
   padding: 2rem;
 }
 
@@ -734,6 +745,7 @@ section { padding: 120px 0; }
   font-weight: 600;
   color: var(--white);
   margin-bottom: 0.2rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
 }
 
 .hero-photo-role {
@@ -758,7 +770,7 @@ section { padding: 120px 0; }
 }
 
 .hero-float-tag-1 { top: -16px; right: 24px; }
-.hero-float-tag-2 { bottom: 80px; left: -20px; animation-delay: 2s; }
+.hero-float-tag-2 { top: 200px; left: -20px; animation-delay: 2s; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -1700,7 +1712,7 @@ section { padding: 120px 0; }
   color: var(--white-dim);
 }
 
-.faq-item.open .faq-answer { max-height: 600px; }
+.faq-item.open .faq-answer { max-height: 2000px; }
 
 /* ============================================
    CONTACT PAGE
@@ -2208,7 +2220,6 @@ footer {
 
         <div class="hero-content">
           <div class="hero-eyebrow reveal">
-            <div class="hero-eyebrow-line"></div>
             <div class="hero-eyebrow-text">Author Visibility and Book Marketing Specialist</div>
           </div>
 
@@ -3997,7 +4008,7 @@ footer {
         <div class="reveal-right">
           <div class="contact-form-card">
             <h3>Request Your Free Book Assessment</h3>
-            <form id="contactForm" action="https://formspree.io/f/hello@eleanorwhitmore.org" method="POST">
+            <form id="contactForm" action="https://formspree.io/f/mojonyep" method="POST">
 
               <input type="text" name="_gotcha" style="display:none" id="website" />
 
@@ -4116,26 +4127,31 @@ for (let i = 1; i <= 7; i++) {
 }
 
 // Page Navigation
-function showPage(name) {
+function showPage(name, fromPopstate = false) {
+  const validName = document.getElementById('page-' + name) ? name : 'home';
+
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById('page-' + name);
-  if (target) {
-    target.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    setTimeout(() => {
-      const reveals = target.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-      reveals.forEach((el, i) => {
-        setTimeout(() => el.classList.add('visible'), i * 60);
-      });
-    }, 50);
-  }
+  const target = document.getElementById('page-' + validName);
+  target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  setTimeout(() => {
+    const reveals = target.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    reveals.forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 60);
+    });
+  }, 50);
+
   document.querySelectorAll('.nav-link').forEach(l => {
     l.classList.remove('active');
-    if (l.dataset && l.getAttribute('onclick') && l.getAttribute('onclick').includes(name)) {
+    const onclick = l.getAttribute('onclick');
+    if (onclick && onclick.includes(`showPage('${validName}')`)) {
       l.classList.add('active');
     }
   });
-  history.pushState(null, '', name === 'home' ? '/' : '#' + name);
+
+  if (!fromPopstate) {
+    history.pushState(null, '', validName === 'home' ? '/' : '#' + validName);
+  }
 }
 
 // Handle hash on load
@@ -4154,7 +4170,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // Handle back/forward
 window.addEventListener('popstate', () => {
   const hash = window.location.hash.slice(1);
-  showPage(hash || 'home');
+  showPage(hash || 'home', true);
 });
 
 // Navbar scroll
